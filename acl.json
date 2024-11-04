@@ -1,0 +1,18 @@
+{
+  "SUPER_ADMIN": {
+    "parentOf": "ADMIN",
+    "habilitations": [
+    ]
+  },
+  "ADMIN": {
+    "parentOf": "USER",
+    "habilitations": [
+      "forgotPassword"
+    ]
+  },
+  "USER": {
+    "habilitations": [
+      "login"
+    ]
+  }
+}

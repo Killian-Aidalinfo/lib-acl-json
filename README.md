@@ -1,15 +1,19 @@
 # bun-brasseur
 
-To install dependencies:
+Pour commencer :
 
 ```bash
 bun install
 ```
 
-To run:
+Lancement en mode dev :
 
 ```bash
-bun run index.ts
+bun dev
 ```
 
-This project was created using `bun init` in bun v1.1.33. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+## Concepts
+
+Creation d'un bibliothèque npm d'ACL.
+
+
