@@ -18,7 +18,7 @@ export class CheckerHabilitations {
   private readonly fileName: string;
 
   constructor() {
-    this.fileName = (typeof Bun !== "undefined" ? Bun.env.HABILITATION_FILENAME : process.env.HABILITATION_FILENAME) || "acl.json";
+    this.fileName = (typeof Bun !== "undefined" ? Bun.env.HABILITATION_FILENAME : process.env.HABILITATION_FILENAME) ?? "acl.json";
   }
 
   // Méthode d'initialisation asynchrone pour charger l'ACL
