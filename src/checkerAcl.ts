@@ -29,11 +29,12 @@ export class checkerHabilitations {
   private async loadHabilitations(): Promise<ACL> {
     const paths =
     process.env.NODE_ENV === "test"
-      ? [`./${this.fileName}`]
-      : [`../../../../src/${this.fileName}`, `../../../../${this.fileName}`];
-
+    ? [`./${this.fileName}`]
+    : [
+        path.join(process.cwd(), "src", this.fileName),  
+        path.join(process.cwd(), this.fileName)
+      ];
     for (const filePath of paths) {
-      const directory = path.dirname(filePath);
       if (typeof Bun !== "undefined") {
         // Si Bun est disponible
         const file = Bun.file(filePath);
@@ -44,11 +45,6 @@ export class checkerHabilitations {
       } else {
         // Fallback pour Node.js 
         try {
-          // Affiche le contenu du répertoire pour aider au débogage
-          console.log(`Contenu du répertoire : ${directory}`);
-          const dirContent = await fs.readdir(directory);
-          console.log(dirContent);
-
           // Vérifie si le fichier existe dans le répertoire
           await fs.access(filePath);
           console.log(`Fichier d'habilitations trouvé : ${filePath}`);
