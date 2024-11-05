@@ -1,4 +1,4 @@
-name: Publish on npm
+name: Donar Analyze
 
 on:
   push:
@@ -7,13 +7,29 @@ on:
 
 jobs:
   sonar:
-    name: Build and analyze
+    name: analyze
     runs-on: ubuntu-latest
     
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0 
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run tests
+        run: bun test 
       - uses: sonarsource/sonarqube-scan-action@v3
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
