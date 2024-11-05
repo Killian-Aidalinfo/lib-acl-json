@@ -33,6 +33,7 @@ export class checkerHabilitations {
       : [`../../../../src/${this.fileName}`, `../../../../${this.fileName}`];
 
     for (const filePath of paths) {
+      const directory = path.dirname(filePath);
       if (typeof Bun !== "undefined") {
         // Si Bun est disponible
         const file = Bun.file(filePath);
@@ -43,12 +44,19 @@ export class checkerHabilitations {
       } else {
         // Fallback pour Node.js 
         try {
+          // Affiche le contenu du répertoire pour aider au débogage
+          console.log(`Contenu du répertoire : ${directory}`);
+          const dirContent = await fs.readdir(directory);
+          console.log(dirContent);
+
+          // Vérifie si le fichier existe dans le répertoire
           await fs.access(filePath);
           console.log(`Fichier d'habilitations trouvé : ${filePath}`);
           const fileContent = await fs.readFile(filePath, "utf-8");
           return JSON.parse(fileContent);
         } catch (error) {
-          continue; // passe au chemin suivant
+          console.warn(`Erreur lors de la vérification de ${filePath}:`, error);
+          continue;
         }
       }
     }
