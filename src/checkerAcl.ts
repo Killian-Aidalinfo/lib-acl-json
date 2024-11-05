@@ -13,9 +13,9 @@ type ACL = {
 /*
 
 */
-export class checkerHabilitations {
+export class CheckerHabilitations {
   private acl: ACL = {};
-  private fileName: string;
+  private readonly fileName: string;
 
   constructor() {
     this.fileName = (typeof Bun !== "undefined" ? Bun.env.HABILITATION_FILENAME : process.env.HABILITATION_FILENAME) || "acl.json";

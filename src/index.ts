@@ -1,7 +1,7 @@
-import { checkerHabilitations } from "./checkerAcl";
+import { CheckerHabilitations } from "./checkerAcl";
 
 // Création de l'instance unique
-const verif = new checkerHabilitations();
+const verif = new CheckerHabilitations();
 
 // Fonction d'initialisation
 async function setupVerifHabilitations() {
