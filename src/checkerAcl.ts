@@ -1,3 +1,5 @@
+import { promises as fs } from "fs";
+import path from "path";
 // Into schema JSON
 type Role = {
   parentOf: string | null;
@@ -16,24 +18,38 @@ export class checkerHabilitations {
   private fileName: string;
 
   constructor() {
-    this.fileName = process.env.HABILITATION_FILENAME || "acl.json";
+    this.fileName = (typeof Bun !== "undefined" ? Bun.env.HABILITATION_FILENAME : process.env.HABILITATION_FILENAME) || "acl.json";
   }
 
+  // Méthode d'initialisation asynchrone pour charger l'ACL
   public async init() {
     this.acl = await this.loadHabilitations();
   }
 
   private async loadHabilitations(): Promise<ACL> {
     const paths =
-      process.env.NODE_ENV === "test"
-        ? [`./${this.fileName}`]
-        : [`../../../../src/${this.fileName}`, `../../../../${this.fileName}`];
+    process.env.NODE_ENV === "test"
+      ? [`./${this.fileName}`]
+      : [`../../../../src/${this.fileName}`, `../../../../${this.fileName}`];
 
     for (const filePath of paths) {
-      const file = Bun.file(filePath);
-      if (await file.exists()) {
-        console.log(`Fichier d'habilitations trouvé : ${filePath}`);
-        return await file.json();
+      if (typeof Bun !== "undefined") {
+        // Si Bun est disponible
+        const file = Bun.file(filePath);
+        if (await file.exists()) {
+          console.log(`Fichier d'habilitations trouvé : ${filePath}`);
+          return await file.json();
+        }
+      } else {
+        // Fallback pour Node.js 
+        try {
+          await fs.access(filePath);
+          console.log(`Fichier d'habilitations trouvé : ${filePath}`);
+          const fileContent = await fs.readFile(filePath, "utf-8");
+          return JSON.parse(fileContent);
+        } catch (error) {
+          continue; // passe au chemin suivant
+        }
       }
     }
 
@@ -41,14 +57,14 @@ export class checkerHabilitations {
   }
 
   public checkPermission(role: string, habilitation: string): boolean {
-    const isRole = this.acl[role];
-    if (!isRole) return false;
+    const roleData = this.acl[role];
+    if (!roleData) return false;
 
-    if (isRole.habilitations.includes(habilitation)) {
+    if (roleData.habilitations.includes(habilitation)) {
       return true;
     }
 
-    const parentRole = isRole.parentOf;
+    const parentRole = roleData.parentOf;
     return parentRole ? this.checkPermission(parentRole, habilitation) : false;
   }
 }
