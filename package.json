@@ -2,6 +2,7 @@
   "name": "lib-acl-json",
   "module": "index.ts",
   "type": "module",
+  "main": "dist/index.js",
   "scripts": {
     "dev": "bun --hot src/index.ts"
   },

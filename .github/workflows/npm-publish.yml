@@ -42,9 +42,17 @@ jobs:
         with:
           node-version: 'lts/*'
           registry-url: 'https://registry.npmjs.org/'
+  
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
 
       - name: Install dependencies
-        run: npm install
+        run: bun install
+
+      - name: Build package
+        run: bun build src/index.ts --outdir ./dist
 
       - name: Set package version from tag
         run: |
