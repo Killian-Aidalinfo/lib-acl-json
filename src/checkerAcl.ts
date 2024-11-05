@@ -16,7 +16,7 @@ export class checkerHabilitations {
   private fileName: string;
 
   constructor() {
-    this.fileName = Bun.env.HABILITATION_FILENAME || "acl.json";
+    this.fileName = process.env.HABILITATION_FILENAME || "acl.json";
   }
 
   public async init() {
@@ -25,7 +25,7 @@ export class checkerHabilitations {
 
   private async loadHabilitations(): Promise<ACL> {
     const paths =
-      Bun.env.NODE_ENV === "test"
+      process.env.NODE_ENV === "test"
         ? [`./${this.fileName}`]
         : [`../../../../src/${this.fileName}`, `../../../../${this.fileName}`];
 
