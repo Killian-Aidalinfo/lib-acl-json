@@ -51,7 +51,7 @@ export class CheckerHabilitations {
           const fileContent = await fs.readFile(filePath, "utf-8");
           return JSON.parse(fileContent);
         } catch (error) {
-          console.warn(`Erreur lors de la vérification de ${filePath}:`, error);
+          console.log(`Erreur lors de la vérification de ${filePath}:`, error);
           continue;
         }
       }
