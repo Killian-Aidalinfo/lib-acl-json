@@ -1,4 +1,4 @@
-import { describe, expect, test, beforeAll } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import verif from "../src/index"; 
 
 describe("Tests de la classe VerifHabilitations", () => {
