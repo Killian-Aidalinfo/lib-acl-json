@@ -2,5 +2,9 @@
   "name": "lib-acl-json",
   "engineVersion": "v0.14.0",
   "sdk": "typescript",
-  "source": "dagger"
+  "source": "dagger",
+  "excludes": [
+    "node_modules",
+    "dist"
+  ]
 }

@@ -9,15 +9,24 @@ import {
 
 @object()
 export class LibAclJson {
+  /*
+  Prod part :
+
+  Publish : install dependencies, run tests, sonar, build, publish
+  Build : install dependencies, run tests, sonar, build,
+  */
+
   @func()
   async publish(
     source: Directory,
     version: string,
-    token: Secret
+    token: Secret,
+    url_sonar: string,
+    token_sonar: Secret
   ): Promise<void> {
     // Build the source code
-    const buildOutput = await this.build(source);
-    
+    const buildOutput = await this.build(source, url_sonar, token_sonar);
+
     const publishContainer = dag
       .container()
       .from("node:lts")
@@ -40,8 +49,13 @@ export class LibAclJson {
   }
 
   @func()
-  async build(source: Directory): Promise<Directory> {
-    const buildContainer = this.buildEnv(source).withExec([
+  async build(
+    source: Directory,
+    url: string,
+    token: Secret
+  ): Promise<Directory> {
+    const preBuild = await this.minimal(source, url, token);
+    const buildContainer = preBuild.withExec([
       "bun",
       "build",
       "src/index.ts",
@@ -54,10 +68,47 @@ export class LibAclJson {
 
     return outputDir;
   }
+  /*
+  Dev part :
+
+  Minimal : install dependencies, run tests, sonar
+  Sonar : run sonar
+  Test : run bun tests 
+  Build : run bun build
+  */
 
   @func()
-  async test(source: Directory): Promise<string> {
-    return this.buildEnv(source).withExec(["bun", "test"]).stdout();
+  async minimal(
+    source: Directory,
+    url: string,
+    token: Secret
+  ): Promise<Container> {
+    // Install dependencies and get container in variable for return
+    const preBuild = this.buildEnv(source);
+    // Run tests and push in variable for get directory with code coverage
+    const unitTest = await this.test(source);
+    // Run sonar 
+    await this.sonar(unitTest, url, token);
+    // Return the container bun install
+    return preBuild;
+  }
+
+  @func()
+  async sonar(source: Directory, url: string, token: Secret): Promise<string> {
+    return dag
+      .container()
+      .from("sonarsource/sonar-scanner-cli")
+      .withUser("root")
+      .withDirectory("/usr/src", source)
+      .withSecretVariable("SONAR_TOKEN", token)
+      .withEnvVariable("SONAR_HOST_URL", url)
+      .withExec(["sonar-scanner"])
+      .stdout();
+  }
+
+  @func()
+  async test(source: Directory): Promise<Directory> {
+    return this.buildEnv(source).withExec(["bun", "test"]).directory("/src");
   }
 
   @func()
